@@ -290,18 +290,18 @@ export function Deck() {
             <X className="size-6" strokeWidth={2} aria-hidden />
           </ActionButton>
           <ActionButton
-            label="Save"
-            onClick={() => commit('right')}
-            className="size-14 bg-accent-red text-cream shadow-lg shadow-accent-red/20"
-          >
-            <Bookmark className="size-[22px]" strokeWidth={2} aria-hidden />
-          </ActionButton>
-          <ActionButton
             label="Add to itinerary"
             onClick={() => addToItinerary(front)}
             className="size-14 bg-ink text-cream shadow-lg shadow-ink/20"
           >
             <Calendar className="size-7" strokeWidth={1.8} aria-hidden />
+          </ActionButton>
+          <ActionButton
+            label="Save"
+            onClick={() => commit('right')}
+            className="size-14 bg-accent-red text-cream shadow-lg shadow-accent-red/20"
+          >
+            <Bookmark className="size-[22px]" strokeWidth={2} aria-hidden />
           </ActionButton>
         </div>
       )}
