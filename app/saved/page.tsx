@@ -8,6 +8,7 @@ import { Screen } from '@/components/screen'
 import { MediaFrame } from '@/components/media-frame'
 import { ScheduleSheet } from '@/components/schedule-sheet'
 import { BuildOverlay } from '@/components/saved/build-overlay'
+import { ItineraryPreferences } from '@/components/saved/itinerary-preferences'
 import { getExperience } from '@/lib/data'
 import { useTrip } from '@/lib/trip-context'
 import type { City, Experience } from '@/lib/types'
@@ -23,6 +24,7 @@ export default function SavedPage() {
   const [sort, setSort] = useState<Sort>('recent')
   const [scheduleId, setScheduleId] = useState<string | null>(null)
   const [building, setBuilding] = useState(false)
+  const [preferencesOpen, setPreferencesOpen] = useState(false)
 
   const items = useMemo(() => {
     const list = saved
@@ -81,7 +83,7 @@ export default function SavedPage() {
           <>
             {/* AI moment */}
             <button
-              onClick={() => setBuilding(true)}
+              onClick={() => setPreferencesOpen(true)}
               className="relative mt-5 overflow-hidden rounded-[28px] p-5 text-left"
               style={{
                 background:
@@ -126,6 +128,14 @@ export default function SavedPage() {
         onClose={() => setScheduleId(null)}
       />
 
+      <ItineraryPreferences
+        open={preferencesOpen}
+        onClose={() => setPreferencesOpen(false)}
+        onBuild={() => {
+          setPreferencesOpen(false)
+          setBuilding(true)
+        }}
+      />
       <BuildOverlay open={building} onClose={() => setBuilding(false)} />
     </Screen>
   )
