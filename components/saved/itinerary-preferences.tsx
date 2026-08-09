@@ -72,11 +72,9 @@ export function ItineraryPreferences({ open, onClose, onBuild }: { open: boolean
             {step === 3 && <NotesStep notes={notes} setNotes={setNotes} />}
           </main>
 
-          {step === 3 && (
-            <footer className="absolute inset-x-0 bottom-0 border-t border-line bg-base/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
-              <button onClick={next} className="w-full rounded-full bg-ink py-3.5 text-title text-cream">Build my itinerary</button>
-            </footer>
-          )}
+          <footer className="absolute inset-x-0 bottom-0 border-t border-line bg-base/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+            <button onClick={next} className="w-full rounded-full bg-ink py-3.5 text-title text-cream">{step === 3 ? 'Build my itinerary' : 'Continue'}</button>
+          </footer>
         </motion.div>
       )}
     </AnimatePresence>
