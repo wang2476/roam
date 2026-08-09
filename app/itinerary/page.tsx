@@ -3,27 +3,34 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { CalendarPlus, Clock, Trash2 } from 'lucide-react'
+import { CalendarPlus, Clock, Ticket, Trash2 } from 'lucide-react'
 import { Screen } from '@/components/screen'
 import { MediaFrame } from '@/components/media-frame'
 import { MatchChip } from '@/components/match-chip'
 import { CategoryGlyph } from '@/components/category'
 import { ScheduleSheet } from '@/components/schedule-sheet'
+import { useToast } from '@/components/toast'
 import { TRIP_DAYS, getExperience } from '@/lib/data'
 import {
   dayName,
   dayNum,
   timeToMinutes,
 } from '@/lib/helpers'
+import { downloadICS } from '@/lib/ics'
 import { useTrip } from '@/lib/trip-context'
-import type { Experience, ScheduledItem } from '@/lib/types'
+import type { Category, Experience, ScheduledItem } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
 type Row = ScheduledItem & { exp: Experience; conflict: boolean }
 
+// Categories that typically require a reservation or ticket, e.g. shows and gigs.
+const BOOKABLE_TAGS: Category[] = ['Music', 'Nightlife', 'Festivals', 'Film']
+const isBookable = (exp: Experience) => exp.tags.some((t) => BOOKABLE_TAGS.includes(t))
+
 export default function ItineraryPage() {
   const { hydrated, scheduled, removeScheduled } = useTrip()
   const router = useRouter()
+  const { toast } = useToast()
   const [activeDay, setActiveDay] = useState<string>(TRIP_DAYS[0])
   const [rescheduleId, setRescheduleId] = useState<string | null>(null)
   const dayRefs = useRef<Record<string, HTMLElement | null>>({})
@@ -84,13 +91,32 @@ export default function ItineraryPage() {
 
   const empty = hydrated && scheduled.length === 0
 
+  const addTripToCalendar = () => {
+    const rows = activeDays
+      .flatMap((day) => byDay[day])
+      .map((row) => ({ day: row.day, time: row.time, exp: row.exp }))
+    downloadICS('japan-itinerary.ics', rows)
+    toast('Calendar file downloaded')
+  }
+
   return (
     <Screen bg="base" showNav>
       <div className="flex flex-col pb-32">
         <header className="px-5 pt-[max(20px,env(safe-area-inset-top))]">
-          <div className="pt-2">
-            <p className="text-label text-ink-30">Your trip</p>
-            <h1 className="text-display mt-1">Japan</h1>
+          <div className="flex items-end justify-between gap-3 pt-2">
+            <div>
+              <p className="text-label text-ink-30">Your trip</p>
+              <h1 className="text-display mt-1">Japan</h1>
+            </div>
+            {hydrated && !empty && (
+              <button
+                onClick={addTripToCalendar}
+                className="text-label flex shrink-0 items-center gap-1.5 rounded-full bg-surface px-4 py-2.5 font-medium text-ink transition active:scale-95"
+              >
+                <CalendarPlus className="size-4" strokeWidth={2} aria-hidden />
+                Add to calendar
+              </button>
+            )}
           </div>
         </header>
 
@@ -166,6 +192,12 @@ export default function ItineraryPage() {
                           removeScheduled(row.id)
                           setRescheduleId(row.exp.id)
                         }}
+                        onBook={() =>
+                          toast(`Booked ${row.exp.title}`, {
+                            label: 'View',
+                            onClick: () => router.push(`/experience/${row.exp.id}`),
+                          })
+                        }
                       />
 
                     </div>
@@ -194,12 +226,14 @@ function TimelineEntry({
   onOpen,
   onRemove,
   onReschedule,
+  onBook,
 }: {
   row: Row
   past: boolean
   onOpen: () => void
   onRemove: () => void
   onReschedule: () => void
+  onBook: () => void
 }) {
   const [revealed, setRevealed] = useState(false)
 
@@ -236,7 +270,9 @@ function TimelineEntry({
           </button>
         </div>
 
-        <motion.button
+        <motion.div
+          role="button"
+          tabIndex={0}
           drag="x"
           dragConstraints={{ left: -144, right: 0 }}
           dragElastic={0.08}
@@ -246,6 +282,13 @@ function TimelineEntry({
           onClick={() => {
             if (revealed) setRevealed(false)
             else onOpen()
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              if (revealed) setRevealed(false)
+              else onOpen()
+            }
           }}
           className={cn(
             'relative flex w-full items-center gap-3 rounded-[20px] bg-surface p-3 text-left',
@@ -272,13 +315,27 @@ function TimelineEntry({
             {row.conflict && (
               <span className="text-label mt-1 inline-block text-warn">Overlaps</span>
             )}
-            <MatchChip
-              reason={row.exp.matchReason.replace(/^because you (like|chose|mentioned|would rather)\s*/i, '')}
-              variant="light"
-              className="mt-1.5 w-fit"
-            />
+            <div className="mt-1.5 flex items-center gap-1.5">
+              <MatchChip
+                reason={row.exp.matchReason.replace(/^because you (like|chose|mentioned|would rather)\s*/i, '')}
+                variant="light"
+                className="w-fit"
+              />
+              {isBookable(row.exp) && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onBook()
+                  }}
+                  className="text-label flex shrink-0 items-center gap-1 rounded-full bg-ink px-2.5 py-1 font-medium text-cream"
+                >
+                  <Ticket className="size-3" strokeWidth={2} aria-hidden />
+                  Book
+                </button>
+              )}
+            </div>
           </div>
-        </motion.button>
+        </motion.div>
       </div>
     </div>
   )
