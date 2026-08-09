@@ -9,8 +9,8 @@ type Budget = 'budget' | 'mid' | 'splurge'
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
-const DEMO_START = new Date(2026, 2, 14)
-const DEMO_END = new Date(2026, 2, 21)
+const DEMO_START = new Date(2026, 7, 14)
+const DEMO_END = new Date(2026, 7, 21)
 
 function dateKey(date: Date) {
   return date.toISOString().slice(0, 10)
@@ -24,7 +24,7 @@ function daysBetween(start: Date, end: Date) {
 
 export function ItineraryPreferences({ open, onClose, onBuild }: { open: boolean; onClose: () => void; onBuild: () => void }) {
   const [step, setStep] = useState(0)
-  const [month, setMonth] = useState(new Date(2026, 2, 1))
+  const [month, setMonth] = useState(new Date(2026, 7, 1))
   const [start, setStart] = useState(DEMO_START)
   const [end, setEnd] = useState(DEMO_END)
   const [flexible, setFlexible] = useState(true)
@@ -72,9 +72,11 @@ export function ItineraryPreferences({ open, onClose, onBuild }: { open: boolean
             {step === 3 && <NotesStep notes={notes} setNotes={setNotes} />}
           </main>
 
-          <footer className="absolute inset-x-0 bottom-0 border-t border-line bg-base/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
-            <button onClick={next} className="w-full rounded-full bg-ink py-3.5 text-title text-cream">{step === 3 ? 'Build my itinerary' : 'Continue'}</button>
-          </footer>
+          {step === 3 && (
+            <footer className="absolute inset-x-0 bottom-0 border-t border-line bg-base/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+              <button onClick={next} className="w-full rounded-full bg-ink py-3.5 text-title text-cream">Build my itinerary</button>
+            </footer>
+          )}
         </motion.div>
       )}
     </AnimatePresence>
