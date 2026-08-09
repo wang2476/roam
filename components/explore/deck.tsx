@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Bookmark,
   Calendar,
-  ChevronDown,
+  Globe2,
   RotateCcw,
   Share2,
   SlidersHorizontal,
@@ -175,10 +175,11 @@ export function Deck() {
       <div className="relative z-30 flex items-center justify-between gap-3 px-4 pt-[max(14px,env(safe-area-inset-top))]">
         <button
           onClick={() => setCityOpen(true)}
-          className="text-meta flex items-center gap-1.5 rounded-full border border-line bg-surface px-4 py-3 text-ink shadow-sm"
+          aria-label={cityLabel}
+          title={cityLabel}
+          className="flex size-11 shrink-0 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-sm"
         >
-          {cityLabel}
-          <ChevronDown className="size-4 text-ink-60" strokeWidth={2} aria-hidden />
+          <Globe2 className="size-[20px] text-ink-60" strokeWidth={1.8} aria-hidden />
         </button>
         <div className="flex rounded-full border border-line bg-surface p-1 shadow-sm" role="tablist" aria-label="Explore view">
           {(['feed', 'browse'] as const).map((mode) => (
