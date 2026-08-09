@@ -7,9 +7,9 @@ import { Bookmark, Compass, CalendarDays, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const ITEMS = [
-  { href: '/saved', label: 'Saved', Icon: Bookmark },
   { href: '/explore', label: 'Explore', Icon: Compass },
   { href: '/itinerary', label: 'Itinerary', Icon: CalendarDays },
+  { href: '/saved', label: 'Saved', Icon: Bookmark },
   { href: '/profile', label: 'Profile', Icon: User },
 ] as const
 
@@ -21,7 +21,7 @@ export function BottomNav() {
       className="pointer-events-none fixed inset-x-0 bottom-0 z-[70] flex justify-center pb-[max(24px,env(safe-area-inset-bottom))]"
       aria-label="Primary"
     >
-      <div className="glass pointer-events-auto flex items-center gap-1 rounded-full p-1.5">
+      <div className="pointer-events-auto flex items-center gap-1 rounded-2xl border border-line bg-surface/95 p-1.5 shadow-[0_8px_30px_rgba(20,18,16,0.12)] backdrop-blur-xl">
         {ITEMS.map(({ href, label, Icon }) => {
           const active =
             pathname === href || pathname.startsWith(href + '/')
@@ -30,12 +30,12 @@ export function BottomNav() {
               key={href}
               href={href}
               aria-current={active ? 'page' : undefined}
-              className="relative flex h-11 items-center rounded-full px-3.5 outline-none focus-visible:ring-2 focus-visible:ring-cream/40"
+              className="relative flex h-11 items-center rounded-xl px-3.5 outline-none focus-visible:ring-2 focus-visible:ring-accent-red/30"
             >
               {active && (
                 <motion.span
                   layoutId="nav-pill"
-                  className="absolute inset-0 rounded-full bg-accent-veil"
+                  className="absolute inset-0 rounded-xl bg-accent-tint"
                   transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                 />
               )}
@@ -43,7 +43,7 @@ export function BottomNav() {
                 <Icon
                   className={cn(
                     'size-[22px] transition-colors',
-                    active ? 'text-accent-lift' : 'text-cream/55',
+                    active ? 'text-accent-red' : 'text-ink-30',
                   )}
                   strokeWidth={active ? 2.2 : 1.8}
                   aria-hidden
@@ -52,7 +52,7 @@ export function BottomNav() {
                   <motion.span
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ opacity: 1, width: 'auto' }}
-                    className="text-label overflow-hidden whitespace-nowrap text-accent-lift"
+                    className="text-label overflow-hidden whitespace-nowrap text-accent-red"
                   >
                     {label}
                   </motion.span>

@@ -38,6 +38,7 @@ export function Deck() {
   const [dir, setDir] = useState<Dir>(null)
   const [deckIds, setDeckIds] = useState<string[] | null>(null)
   const [undo, setUndo] = useState<{ id: string; msg: string } | null>(null)
+  const [view, setView] = useState<'feed' | 'browse'>('feed')
 
   const seenRef = useRef<Set<string>>(new Set())
   seenRef.current = new Set([...saved, ...passed])
@@ -161,30 +162,44 @@ export function Deck() {
   const stack = useMemo(() => (deckIds ?? []).slice(0, 3), [deckIds])
 
   return (
-    <div className="relative flex h-full min-h-[100dvh] flex-col bg-void lg:min-h-0">
-      {/* Floating top bar */}
-      <div className="absolute inset-x-0 top-0 z-30 flex items-center justify-between px-4 pt-[max(14px,env(safe-area-inset-top))]">
+    <div className="relative flex h-full min-h-[100dvh] flex-col bg-base text-ink lg:min-h-0">
+      {/* Explore controls */}
+      <div className="relative z-30 flex items-center justify-between gap-3 px-4 pt-[max(14px,env(safe-area-inset-top))]">
         <button
           onClick={() => setCityOpen(true)}
-          className="glass text-meta flex items-center gap-1.5 rounded-full py-2 pr-3 pl-4 text-cream"
+          className="text-meta flex items-center gap-1.5 rounded-full border border-line bg-surface px-4 py-3 text-ink shadow-sm"
         >
           {cityLabel}
-          <ChevronDown className="size-4 opacity-70" strokeWidth={2} aria-hidden />
+          <ChevronDown className="size-4 text-ink-60" strokeWidth={2} aria-hidden />
         </button>
+        <div className="flex rounded-full border border-line bg-surface p-1 shadow-sm" role="tablist" aria-label="Explore view">
+          {(['feed', 'browse'] as const).map((mode) => (
+            <button
+              key={mode}
+              role="tab"
+              aria-selected={view === mode}
+              onClick={() => setView(mode)}
+              className={cn(
+                'text-meta rounded-full px-4 py-2 capitalize transition-colors',
+                view === mode ? 'bg-ink text-cream' : 'text-ink-60',
+              )}
+            >
+              {mode === 'feed' ? 'Feed' : 'Browse'}
+            </button>
+          ))}
+        </div>
         <button
           onClick={() => setFilterOpen(true)}
           aria-label="Filters"
-          className="glass relative flex size-10 items-center justify-center rounded-full text-cream"
+          className="relative flex size-11 shrink-0 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-sm"
         >
           <SlidersHorizontal className="size-[18px]" strokeWidth={1.8} aria-hidden />
-          {activeCats.length > 0 && (
-            <span className="absolute right-2 top-2 size-2 rounded-full bg-accent-lift" />
-          )}
+          {activeCats.length > 0 && <span className="absolute right-2 top-2 size-2 rounded-full bg-accent-red" />}
         </button>
       </div>
 
       {/* Card stack */}
-      <div className="relative flex-1 px-3 pb-2 pt-[calc(env(safe-area-inset-top)+64px)]">
+      <div className="relative flex-1 px-3 pb-2 pt-4">
         <div className="relative h-full w-full">
           {!hydrated || deckIds === null ? (
             <DeckSkeleton />
@@ -258,32 +273,32 @@ export function Deck() {
 
       {/* Action row */}
       {front && (
-        <div className="relative z-20 flex items-center justify-center gap-4 pb-3 pt-1">
+        <div className="relative z-20 flex items-center justify-center gap-4 px-4 pb-24 pt-3">
           <ActionButton
             label="Pass"
             onClick={() => commit('left')}
-            className="size-14 border border-glass-line text-cream"
+            className="size-14 border border-line bg-surface text-ink-60 shadow-sm"
           >
             <X className="size-6" strokeWidth={2} aria-hidden />
           </ActionButton>
           <ActionButton
             label="Save"
             onClick={() => commit('right')}
-            className="size-14 bg-accent-red text-cream"
+            className="size-14 bg-accent-red text-cream shadow-lg shadow-accent-red/20"
           >
             <Bookmark className="size-[22px]" strokeWidth={2} aria-hidden />
           </ActionButton>
           <ActionButton
             label="Add to itinerary"
             onClick={() => setScheduleId(front)}
-            className="size-16 bg-cream text-void"
+            className="size-16 bg-ink text-cream shadow-lg shadow-ink/20"
           >
             <Calendar className="size-7" strokeWidth={1.8} aria-hidden />
           </ActionButton>
           <ActionButton
             label="Share"
             onClick={() => doShare(front)}
-            className="size-12 text-cream/55"
+            className="size-12 border border-line bg-surface text-ink-30 shadow-sm"
           >
             <Share2 className="size-5" strokeWidth={1.8} aria-hidden />
           </ActionButton>
@@ -318,7 +333,7 @@ export function Deck() {
       <BottomSheet
         open={cityOpen}
         onClose={() => setCityOpen(false)}
-        theme="dark"
+        theme="light"
         labelledBy="city-title"
       >
         <h2 id="city-title" className="text-title mb-4">
@@ -351,7 +366,7 @@ export function Deck() {
       <BottomSheet
         open={filterOpen}
         onClose={() => setFilterOpen(false)}
-        theme="dark"
+        theme="light"
         labelledBy="filter-title"
       >
         <div className="mb-4 flex items-center justify-between">

@@ -6,6 +6,7 @@
 
 @theme inline {
   --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif-display), Georgia, serif;
 
   /* Ikou — dark surfaces */
   --color-void: #0e0d0c;
@@ -101,10 +102,15 @@
   letter-spacing: -0.03em;
 }
 .text-title {
-  font-size: 26px;
-  line-height: 30px;
+  font-family: var(--font-serif-display), Georgia, serif;
+  font-size: 28px;
+  line-height: 32px;
   font-weight: 400;
   letter-spacing: -0.02em;
+}
+
+.font-serif-display {
+  font-family: var(--font-serif-display), Georgia, serif;
 }
 .text-body {
   font-size: 16px;

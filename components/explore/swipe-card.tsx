@@ -119,7 +119,7 @@ export function SwipeCard({
         {/* content */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-col gap-3 p-6">
           <MatchChip reason={exp.matchReason} className="w-fit" />
-          <h2 className="text-display line-clamp-2 text-cream text-balance">
+          <h2 className="font-serif-display text-display line-clamp-2 text-cream text-balance">
             {exp.title}
           </h2>
           <div className="text-meta flex items-center gap-2 text-cream-70">

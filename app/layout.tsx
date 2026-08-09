@@ -1,6 +1,6 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Outfit } from 'next/font/google'
+import { DM_Serif_Display, Outfit } from 'next/font/google'
 import { TripProvider } from '@/lib/trip-context'
 import { ToastProvider } from '@/components/toast'
 import './globals.css'
@@ -9,6 +9,12 @@ const outfit = Outfit({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600'],
   variable: '--font-outfit',
+})
+
+const serif = DM_Serif_Display({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-serif-display',
 })
 
 export const metadata: Metadata = {
@@ -32,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${outfit.variable} bg-base`}>
+    <html lang="en" className={`${outfit.variable} ${serif.variable} bg-base`}>
       <body className="font-sans">
         <TripProvider>
           <ToastProvider>{children}</ToastProvider>
