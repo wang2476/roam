@@ -264,7 +264,7 @@ export default function ProfilePage() {
               onClick={() => {
                 resetDemoData()
                 setSynced(false)
-                router.push('/onboarding')
+                router.push('/onboarding?restart=1')
               }}
               className="text-body mt-3 w-full rounded-full border border-line bg-surface py-3.5 font-medium text-ink transition active:scale-[0.98]"
             >

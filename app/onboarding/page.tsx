@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Check, ChevronDown, ChevronLeft, Mic, Search } from 'lucide-react'
 import { Screen } from '@/components/screen'
 import { CategoryGlyph } from '@/components/category'
-import { ALL_CITIES, CORE_INTERESTS, SEARCH_INTERESTS } from '@/lib/data'
+import { ALL_CITIES, CORE_INTERESTS, SEARCH_INTERESTS, EXPERIENCES } from '@/lib/data'
 import { useTrip } from '@/lib/trip-context'
 import type { Category } from '@/lib/types'
 
@@ -39,6 +39,7 @@ export default function OnboardingPage() {
   const router = useRouter()
   const { completeOnboarding } = useTrip()
 
+  const [showLaunch, setShowLaunch] = useState(false)
   const [step, setStep] = useState(0)
   const [continents, setContinents] = useState<string[]>([])
   const [countries, setCountries] = useState<string[]>([])
@@ -46,6 +47,10 @@ export default function OnboardingPage() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [freeform, setFreeform] = useState('')
   const [generating, setGenerating] = useState(false)
+
+  useEffect(() => {
+    setShowLaunch(new URLSearchParams(window.location.search).get('restart') === '1')
+  }, [])
 
   const minMet =
     (step === 0 && continents.length >= 1) ||
@@ -70,6 +75,7 @@ export default function OnboardingPage() {
   }
 
   if (generating) return <GeneratingScreen />
+  if (showLaunch) return <LaunchScreen onStart={() => setShowLaunch(false)} />
 
   return (
     <Screen bg="base">
@@ -152,6 +158,55 @@ export default function OnboardingPage() {
         </div>
       </div>
     </Screen>
+  )
+}
+
+function LaunchScreen({ onStart }: { onStart: () => void }) {
+  const media = EXPERIENCES.filter((experience) => experience.videoUrl || experience.posterUrl).slice(0, 8)
+
+  return (
+    <main className="relative flex min-h-[100dvh] flex-col overflow-hidden bg-ink text-cream">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+        <div className="launch-marquee absolute inset-0">
+          {[...media, ...media].map((experience, index) => (
+            <div
+              key={`${experience.id}-${index}`}
+              className="absolute w-[31vw] max-w-36 overflow-hidden rounded-2xl border border-cream/15 bg-cream/10 shadow-2xl"
+              style={{
+                left: `${8 + ((index * 17) % 86)}%`,
+                height: `${112 + ((index * 23) % 82)}px`,
+                animationDuration: `${25 + ((index * 11) % 24)}s`,
+                animationDelay: `${-((index * 7) % 30)}s`,
+              }}
+            >
+              <video
+                src={experience.videoUrl ?? undefined}
+                poster={experience.posterUrl}
+                muted
+                autoPlay
+                loop
+                playsInline
+                className="h-full w-full object-cover opacity-70"
+              />
+            </div>
+          ))}
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/45 via-ink/35 to-ink" />
+      </div>
+
+      <div className="relative z-10 flex flex-1 flex-col justify-between px-6 pb-[max(24px,env(safe-area-inset-bottom))] pt-[max(28px,env(safe-area-inset-top))]">
+        <div className="flex items-center justify-between">
+          <span className="font-serif-display text-3xl tracking-tight">Roam</span>
+          <span className="text-label text-cream/65">Travel differently</span>
+        </div>
+        <div className="pb-3">
+          <p className="text-label mb-4 text-accent-red">Your next story starts here</p>
+          <h1 className="font-serif-display max-w-sm text-5xl leading-[0.96] tracking-tight text-balance">Find the places you&apos;ll want to remember.</h1>
+          <p className="text-body mt-5 max-w-xs text-cream/70">A slower way to discover local experiences, shaped around what moves you.</p>
+          <button onClick={onStart} className="text-body mt-8 w-full rounded-full bg-cream py-4 font-medium text-ink transition active:scale-[0.98]">Start exploring</button>
+        </div>
+      </div>
+    </main>
   )
 }
 

@@ -156,6 +156,21 @@
   scrollbar-width: none;
 }
 
+.launch-marquee > div {
+  top: 0;
+  animation: launch-rise linear infinite;
+  will-change: transform;
+}
+
+@keyframes launch-rise {
+  from {
+    transform: translateY(120vh) rotate(-2deg);
+  }
+  to {
+    transform: translateY(-140vh) rotate(2deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
