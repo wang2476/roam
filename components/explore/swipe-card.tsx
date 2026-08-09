@@ -46,12 +46,15 @@ export function SwipeCard({
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       animate={controls}
       custom={dir}
-      exit={(d: Dir) => ({
-        x: d === 'left' ? -640 : d === 'right' ? 640 : 0,
-        y: d === 'up' ? -760 : 0,
-        opacity: 0,
-        transition: { duration: 0.28, ease: [0.4, 0, 0.2, 1] },
-      })}
+      variants={{
+        exit: (d: Dir) => ({
+          x: d === 'left' ? -640 : d === 'right' ? 640 : 0,
+          y: d === 'up' ? -760 : 0,
+          opacity: 0,
+          transition: { duration: 0.28, ease: [0.4, 0, 0.2, 1] },
+        }),
+      }}
+      exit="exit"
       onDragEnd={(_, info) => {
         const el = document.getElementById(`card-${exp.id}`)
         const w = el?.offsetWidth ?? 340
