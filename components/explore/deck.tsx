@@ -58,15 +58,16 @@ export function Deck() {
     if (!hydrated) return
     const ranked = rankExperiences(
       EXPERIENCES.filter(
-        (e) => !seenRef.current.has(e.id) && matchesFilters(e.city, e.tags),
+        (e) =>
+          Boolean(e.videoUrl) &&
+          Boolean(e.title.trim()) &&
+          Boolean(e.description.trim()) &&
+          !seenRef.current.has(e.id) &&
+          matchesFilters(e.city, e.tags),
       ),
       prefs,
     )
-    // Put newly imported clips first so the video catalog is immediately discoverable.
-    const list = [
-      ...ranked.filter((e) => e.videoUrl),
-      ...ranked.filter((e) => !e.videoUrl),
-    ].map((e) => e.id)
+    const list = ranked.map((e) => e.id)
     setDeckIds(list)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated, activeCity, activeCats, prefs.cities.join(), prefs.interests.join(), prefs.freeform])
