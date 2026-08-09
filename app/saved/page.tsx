@@ -6,11 +6,9 @@ import { useMemo, useRef, useState } from 'react'
 import { Plus, Sparkles, Trash2, Wand2 } from 'lucide-react'
 import { Screen } from '@/components/screen'
 import { MediaFrame } from '@/components/media-frame'
-import { MatchChip } from '@/components/match-chip'
 import { ScheduleSheet } from '@/components/schedule-sheet'
 import { BuildOverlay } from '@/components/saved/build-overlay'
 import { getExperience } from '@/lib/data'
-import { formatDayLong } from '@/lib/helpers'
 import { useTrip } from '@/lib/trip-context'
 import type { City, Experience } from '@/lib/types'
 import { cn } from '@/lib/utils'
@@ -105,13 +103,12 @@ export default function SavedPage() {
               </span>
             </button>
 
-            {/* Masonry grid */}
-            <div className="mt-4 columns-2 gap-3 [column-fill:_balance]">
-              {items.map((exp, i) => (
+            {/* Even saved-card grid */}
+            <div className="mt-4 grid grid-cols-2 items-stretch gap-3">
+              {items.map((exp) => (
                 <SavedCard
                   key={exp.id}
                   exp={exp}
-                  tall={i % 3 === 0}
                   onSchedule={() => setScheduleId(exp.id)}
                   onRemove={() => unsave(exp.id)}
                 />
@@ -134,12 +131,10 @@ export default function SavedPage() {
 
 function SavedCard({
   exp,
-  tall,
   onSchedule,
   onRemove,
 }: {
   exp: Experience
-  tall: boolean
   onSchedule: () => void
   onRemove: () => void
 }) {
@@ -155,16 +150,16 @@ function SavedCard({
 
   return (
     <div
-      className="mb-3 break-inside-avoid overflow-hidden rounded-[20px] bg-surface"
+      className="flex min-h-0 h-full flex-col overflow-hidden rounded-[20px] bg-surface"
       style={{ boxShadow: '0 1px 2px rgba(20,18,16,0.04), 0 8px 24px rgba(20,18,16,0.06)' }}
       onPointerDown={startPress}
       onPointerUp={cancelPress}
       onPointerLeave={cancelPress}
     >
-      <div className={cn('relative w-full', tall ? 'aspect-[3/4]' : 'aspect-square')}>
+      <div className="relative aspect-[4/3] w-full shrink-0">
         <MediaFrame
           posterUrl={exp.posterUrl}
-          videoUrl={null}
+          videoUrl={exp.videoUrl}
           active={false}
           alt={exp.title}
           className="h-full w-full"
@@ -206,12 +201,9 @@ function SavedCard({
         </AnimatePresence>
       </div>
 
-      <div className="flex flex-col gap-2 p-3.5">
-        <h3 className="text-body font-medium leading-snug text-balance">{exp.title}</h3>
-        <p className="text-meta text-ink-60">
-          {exp.neighborhood} &middot; {formatDayLong(exp.date)}
-        </p>
-        <MatchChip reason={exp.matchReason} variant="light" className="mt-0.5 w-fit" />
+      <div className="flex min-h-24 flex-1 flex-col gap-1.5 p-3">
+        <h3 className="text-body line-clamp-2 min-h-10 font-medium leading-snug text-balance">{exp.title}</h3>
+        <p className="text-meta mt-auto line-clamp-1 text-ink-60">{exp.neighborhood}</p>
       </div>
     </div>
   )
@@ -219,13 +211,13 @@ function SavedCard({
 
 function SavedSkeleton() {
   return (
-    <div className="mt-6 columns-2 gap-3">
+    <div className="mt-6 grid grid-cols-2 gap-3">
       {[0, 1, 2, 3].map((i) => (
         <div
           key={i}
-          className="mb-3 break-inside-avoid animate-pulse overflow-hidden rounded-[20px] bg-surface"
+          className="animate-pulse overflow-hidden rounded-[20px] bg-surface"
         >
-          <div className={cn('w-full bg-line', i % 2 ? 'aspect-square' : 'aspect-[3/4]')} />
+          <div className="aspect-[4/3] w-full bg-line" />
           <div className="space-y-2 p-3.5">
             <div className="h-4 w-3/4 rounded bg-line" />
             <div className="h-3 w-1/2 rounded bg-line" />

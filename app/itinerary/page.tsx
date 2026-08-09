@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { CalendarPlus, Clock, Train, Trash2 } from 'lucide-react'
+import { CalendarPlus, Clock, Trash2 } from 'lucide-react'
 import { Screen } from '@/components/screen'
 import { MediaFrame } from '@/components/media-frame'
 import { MatchChip } from '@/components/match-chip'
@@ -13,9 +13,7 @@ import { TRIP_DAYS, getExperience } from '@/lib/data'
 import {
   dayName,
   dayNum,
-  formatTime,
   timeToMinutes,
-  travelMinutes,
 } from '@/lib/helpers'
 import { useTrip } from '@/lib/trip-context'
 import type { Experience, ScheduledItem } from '@/lib/types'
@@ -93,7 +91,6 @@ export default function ItineraryPage() {
           <div className="pt-2">
             <p className="text-label text-ink-30">Your trip</p>
             <h1 className="text-display mt-1">Japan</h1>
-            <p className="text-meta text-ink-60 mt-1">Mar 14&ndash;21, 2026</p>
           </div>
         </header>
 
@@ -170,12 +167,7 @@ export default function ItineraryPage() {
                           setRescheduleId(row.exp.id)
                         }}
                       />
-                      {i < byDay[day].length - 1 && (
-                        <TravelConnector
-                          from={byDay[day][i]}
-                          to={byDay[day][i + 1]}
-                        />
-                      )}
+
                     </div>
                   ))}
                 </div>
@@ -226,11 +218,6 @@ function TimelineEntry({
         <CategoryGlyph category={row.exp.tags[0]} className="size-3.5" />
       </span>
 
-      {/* time */}
-      <p className="text-label text-ink-60 absolute -left-[8px] top-[52px] w-14 -translate-x-full text-right tracking-normal normal-case">
-        {formatTime(row.time)}
-      </p>
-
       <div className="relative overflow-hidden rounded-[20px]">
         <div className="absolute inset-y-0 right-0 flex items-stretch">
           <button
@@ -280,7 +267,7 @@ function TimelineEntry({
               <h3 className="text-body truncate font-medium">{row.exp.title}</h3>
             </div>
             <p className="text-meta text-ink-60 mt-0.5 truncate">
-              {row.exp.neighborhood} &middot; {row.exp.durationMin} min
+              {row.exp.neighborhood}
             </p>
             {row.conflict && (
               <span className="text-label mt-1 inline-block text-warn">Overlaps</span>
@@ -293,19 +280,6 @@ function TimelineEntry({
           </div>
         </motion.button>
       </div>
-    </div>
-  )
-}
-
-function TravelConnector({ from, to }: { from: Row; to: Row }) {
-  const mins = travelMinutes(from.exp, to.exp)
-  return (
-    <div className="relative flex items-center gap-2 py-1 pl-1">
-      <span className="absolute -left-[27px] top-0 bottom-0 w-px -translate-x-0 border-l border-dashed border-line" />
-      <Train className="size-3.5 text-ink-30" strokeWidth={1.8} aria-hidden />
-      <span className="text-label text-ink-30 tracking-normal normal-case">
-        ~{mins} min by train
-      </span>
     </div>
   )
 }
