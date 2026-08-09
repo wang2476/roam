@@ -70,16 +70,29 @@ export function ScheduleSheet({
       <div className="flex items-center gap-3">
         <MediaFrame
           posterUrl={exp.posterUrl}
-          videoUrl={null}
+          videoUrl={exp.videoUrl}
           alt={exp.title}
           active={false}
-          className="size-14 shrink-0 rounded-2xl"
+          className="size-16 shrink-0 rounded-2xl"
         />
         <div className="min-w-0">
           <p className="text-label text-ink-30">Add to itinerary</p>
           <h2 id="schedule-title" className="text-body truncate font-medium">
             {exp.title}
           </h2>
+          <p className="text-meta mt-1 truncate text-ink-30">
+            {exp.city} · {exp.neighborhood} · {exp.durationMin} min
+          </p>
+        </div>
+      </div>
+      <div className="mt-4 rounded-2xl bg-surface px-4 py-3">
+        <p className="text-meta line-clamp-2 text-ink-70">{exp.description}</p>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {exp.tags.map((tag) => (
+            <span key={tag} className="text-label rounded-full bg-accent-tint px-2.5 py-1 text-accent-red">
+              {tag}
+            </span>
+          ))}
         </div>
       </div>
 

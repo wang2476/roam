@@ -47,6 +47,7 @@ export function MediaFrame({
         <video
           ref={ref}
           className="h-full w-full object-cover"
+          src={videoUrl ?? undefined}
           poster={posterUrl}
           autoPlay={active}
           muted={muted}
