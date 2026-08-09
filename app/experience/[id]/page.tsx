@@ -45,10 +45,6 @@ export default function ExperienceDetail() {
   const [scheduleOpen, setScheduleOpen] = useState(false)
   const detailScrollRef = useRef<HTMLDivElement>(null)
 
-  const resetToVideo = () => {
-    detailScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
   if (!exp) {
     return (
       <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-4 bg-void px-8 text-center text-cream">
@@ -65,8 +61,7 @@ export default function ExperienceDetail() {
 
   const isSaved = saved.includes(exp.id)
   const goBackToExplore = () => {
-    if (window.history.length > 1) router.back()
-    else router.push('/explore')
+    router.push('/explore')
   }
   const doShare = () => {
     const url = window.location.href
@@ -116,8 +111,8 @@ export default function ExperienceDetail() {
         <div className="relative min-h-[42vh] rounded-t-[32px] bg-void px-5 pt-7 shadow-[0_-18px_45px_rgba(0,0,0,0.28)] motion-safe:animate-in motion-safe:slide-in-from-bottom-10 motion-safe:duration-500">
           <button
             type="button"
-            onClick={resetToVideo}
-            aria-label="Show full video"
+            onClick={goBackToExplore}
+            aria-label="Close and back to Explore"
             className="mx-auto mb-5 block h-1.5 w-12 rounded-full bg-cream/25 transition hover:bg-cream/45 active:scale-95"
           />
           {/* Body */}
