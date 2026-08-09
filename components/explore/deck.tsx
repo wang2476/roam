@@ -15,7 +15,6 @@ import {
 import { SwipeCard, type Dir } from './swipe-card'
 import { MediaFrame } from '@/components/media-frame'
 import { CategoryGlyph } from '@/components/category'
-import { ScheduleSheet } from '@/components/schedule-sheet'
 import { BottomSheet } from '@/components/sheet'
 import { useToast } from '@/components/toast'
 import { ALL_CITIES, ALL_INTERESTS, EXPERIENCES, getExperience } from '@/lib/data'
@@ -25,7 +24,7 @@ import type { Category, City } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
 export function Deck() {
-  const { hydrated, prefs, saved, passed, save, pass, undoLast, setPrefs } = useTrip()
+  const { hydrated, prefs, saved, passed, save, pass, schedule, undoLast, setPrefs } = useTrip()
   const { toast } = useToast()
   const router = useRouter()
   const reduce = useReducedMotion()
@@ -34,7 +33,6 @@ export function Deck() {
   const [activeCats, setActiveCats] = useState<Category[]>([])
   const [cityOpen, setCityOpen] = useState(false)
   const [filterOpen, setFilterOpen] = useState(false)
-  const [scheduleId, setScheduleId] = useState<string | null>(null)
   const [dir, setDir] = useState<Dir>(null)
   const [deckIds, setDeckIds] = useState<string[] | null>(null)
   const [undo, setUndo] = useState<{ id: string; msg: string } | null>(null)
@@ -80,6 +78,16 @@ export function Deck() {
   }, [undo])
 
   const front = deckIds?.[0] ?? null
+
+  const addToItinerary = useCallback(
+    (id: string) => {
+      const exp = getExperience(id)
+      if (!exp) return
+      schedule({ experienceId: id, day: exp.date, time: exp.startTime })
+      toast('Added to itinerary')
+    },
+    [schedule, toast],
+  )
 
   const commit = useCallback(
     (d: 'left' | 'right') => {
@@ -139,7 +147,7 @@ export function Deck() {
           break
         case 'ArrowUp':
           e.preventDefault()
-          if (f) setScheduleId(f)
+          if (f) addToItinerary(f)
           break
         case 'Enter':
           if (f) router.push(`/experience/${f}`)
@@ -156,7 +164,7 @@ export function Deck() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [deckIds, cityOpen, filterOpen, scheduleId, commit, doUndo, doShare, router])
+  }, [deckIds, cityOpen, filterOpen, addToItinerary, commit, doUndo, doShare, router])
 
   const cityLabel = activeCity === 'All' ? 'All cities' : activeCity
   const stack = useMemo(() => (deckIds ?? []).slice(0, 3), [deckIds])
@@ -261,7 +269,7 @@ export function Deck() {
                     exp={getExperience(front)!}
                     dir={dir}
                     onCommit={commit}
-                    onAdd={() => setScheduleId(front)}
+                    onAdd={() => addToItinerary(front)}
                     onOpen={() => router.push(`/experience/${front}`)}
                   />
                 )}
@@ -290,7 +298,7 @@ export function Deck() {
           </ActionButton>
           <ActionButton
             label="Add to itinerary"
-            onClick={() => setScheduleId(front)}
+            onClick={() => addToItinerary(front)}
             className="size-16 bg-ink text-cream shadow-lg shadow-ink/20"
           >
             <Calendar className="size-7" strokeWidth={1.8} aria-hidden />
@@ -414,11 +422,6 @@ export function Deck() {
         </button>
       </BottomSheet>
 
-      <ScheduleSheet
-        experienceId={scheduleId}
-        open={scheduleId !== null}
-        onClose={() => setScheduleId(null)}
-      />
     </div>
   )
 }
