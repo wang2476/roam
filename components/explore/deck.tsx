@@ -17,7 +17,7 @@ import { CategoryGlyph } from '@/components/category'
 import { BottomSheet } from '@/components/sheet'
 import { useToast } from '@/components/toast'
 import { ALL_CITIES, ALL_INTERESTS, EXPERIENCES, getExperience } from '@/lib/data'
-import { rankExperiences } from '@/lib/helpers'
+import { shuffle } from '@/lib/helpers'
 import { useTrip } from '@/lib/trip-context'
 import type { Category, City } from '@/lib/types'
 import { cn } from '@/lib/utils'
@@ -54,7 +54,7 @@ export function Deck() {
   // Reset the working deck only when filters (not swipes) change.
   useEffect(() => {
     if (!hydrated) return
-    const ranked = rankExperiences(
+    const shuffled = shuffle(
       EXPERIENCES.filter(
         (e) =>
           Boolean(e.videoUrl) &&
@@ -63,9 +63,8 @@ export function Deck() {
           !seenRef.current.has(e.id) &&
           matchesFilters(e.city, e.tags),
       ),
-      prefs,
     )
-    const list = ranked.map((e) => e.id)
+    const list = shuffled.map((e) => e.id)
     setDeckIds(list)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated, activeCity, activeCats, prefs.cities.join(), prefs.interests.join(), prefs.freeform])
