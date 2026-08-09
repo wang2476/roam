@@ -38,9 +38,7 @@ export default function OnboardingPage() {
   const router = useRouter()
   const { completeOnboarding } = useTrip()
 
-  const [showLaunch, setShowLaunch] = useState(() =>
-    typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('restart') === '1',
-  )
+  const [showLaunch, setShowLaunch] = useState(false)
   const [step, setStep] = useState(0)
   const [continents, setContinents] = useState<string[]>([])
   const [countries, setCountries] = useState<string[]>([])
