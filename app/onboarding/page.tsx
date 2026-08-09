@@ -38,6 +38,7 @@ export default function OnboardingPage() {
   const router = useRouter()
   const { completeOnboarding } = useTrip()
 
+  const [mounted, setMounted] = useState(false)
   const [showLaunch, setShowLaunch] = useState(false)
   const [step, setStep] = useState(0)
   const [continents, setContinents] = useState<string[]>([])
@@ -48,6 +49,7 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     setShowLaunch(new URLSearchParams(window.location.search).get('restart') === '1')
+    setMounted(true)
   }, [])
 
   const minMet =
@@ -72,6 +74,7 @@ export default function OnboardingPage() {
     else finish()
   }
 
+  if (!mounted) return null
   if (generating) return <GeneratingScreen />
   if (showLaunch) return <LaunchScreen onStart={() => setShowLaunch(false)} />
 
