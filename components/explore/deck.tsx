@@ -8,7 +8,6 @@ import {
   Calendar,
   Globe2,
   RotateCcw,
-  Share2,
   SlidersHorizontal,
   X,
 } from 'lucide-react'
@@ -300,16 +299,9 @@ export function Deck() {
           <ActionButton
             label="Add to itinerary"
             onClick={() => addToItinerary(front)}
-            className="size-16 bg-ink text-cream shadow-lg shadow-ink/20"
+            className="size-14 bg-ink text-cream shadow-lg shadow-ink/20"
           >
             <Calendar className="size-7" strokeWidth={1.8} aria-hidden />
-          </ActionButton>
-          <ActionButton
-            label="Share"
-            onClick={() => doShare(front)}
-            className="size-12 border border-line bg-surface text-ink-30 shadow-sm"
-          >
-            <Share2 className="size-5" strokeWidth={1.8} aria-hidden />
           </ActionButton>
         </div>
       )}
