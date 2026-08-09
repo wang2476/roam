@@ -162,7 +162,7 @@ export default function OnboardingPage() {
 }
 
 function LaunchScreen({ onStart }: { onStart: () => void }) {
-  const media = EXPERIENCES.filter((experience) => experience.videoUrl || experience.posterUrl).slice(0, 8)
+  const media = EXPERIENCES.filter((experience) => experience.videoUrl).slice(0, 8)
 
   return (
     <main className="relative flex min-h-[100dvh] flex-col overflow-hidden bg-ink text-cream">
