@@ -59,6 +59,10 @@ export default function ExperienceDetail() {
   }
 
   const isSaved = saved.includes(exp.id)
+  const goBackToExplore = () => {
+    if (window.history.length > 1) router.back()
+    else router.push('/explore')
+  }
   const doShare = () => {
     const url = window.location.href
     if (navigator.share) navigator.share({ title: exp.title, url }).catch(() => {})
@@ -69,53 +73,45 @@ export default function ExperienceDetail() {
   }
 
   return (
-    <div className="relative min-h-[100dvh] bg-void text-cream lg:mx-auto lg:my-6 lg:min-h-0 lg:w-full lg:max-w-[440px] lg:overflow-hidden lg:rounded-[40px] lg:shadow-2xl">
-      <div className="relative pb-28 lg:h-[calc(100dvh-3rem)] lg:overflow-y-auto no-scrollbar">
-        {/* Hero */}
-        <div className="media-scrim relative h-[55vh] lg:h-[380px]">
-          <MediaFrame
-            posterUrl={exp.posterUrl}
-            videoUrl={exp.videoUrl}
-            alt={exp.title}
-            active
-            muted={muted}
-            className="h-full w-full"
-          />
-          <div className="absolute inset-x-0 top-0 flex items-center justify-between px-4 pt-[max(14px,env(safe-area-inset-top))]">
-            <button
-              onClick={() => router.back()}
-              aria-label="Back"
-              className="glass flex size-10 items-center justify-center rounded-full text-cream"
-            >
-              <ChevronLeft className="size-5" strokeWidth={2} aria-hidden />
+    <div className="relative min-h-[100dvh] overflow-hidden bg-void text-cream lg:mx-auto lg:my-6 lg:min-h-0 lg:w-full lg:max-w-[440px] lg:rounded-[40px] lg:shadow-2xl">
+      {/* Video stays fixed behind the detail sheet. */}
+      <div className="media-scrim absolute inset-0 h-[58vh]">
+        <MediaFrame
+          posterUrl={exp.posterUrl}
+          videoUrl={exp.videoUrl}
+          alt={exp.title}
+          active
+          muted={muted}
+          className="h-full w-full"
+        />
+      </div>
+      <div className="relative z-10 min-h-[100dvh] pb-28 pt-[58vh] lg:h-[calc(100dvh-3rem)] lg:overflow-y-auto no-scrollbar">
+        {/* Back and media controls */}
+        <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-4 pt-[max(14px,env(safe-area-inset-top))]">
+          <button
+            onClick={goBackToExplore}
+            aria-label="Back to Explore"
+            className="glass flex size-10 items-center justify-center rounded-full text-cream"
+          >
+            <ChevronLeft className="size-5" strokeWidth={2} aria-hidden />
+          </button>
+          <div className="flex gap-2">
+            <button onClick={doShare} aria-label="Share" className="glass flex size-10 items-center justify-center rounded-full text-cream">
+              <Share2 className="size-[18px]" strokeWidth={1.8} aria-hidden />
             </button>
-            <div className="flex gap-2">
-              <button
-                onClick={doShare}
-                aria-label="Share"
-                className="glass flex size-10 items-center justify-center rounded-full text-cream"
-              >
-                <Share2 className="size-[18px]" strokeWidth={1.8} aria-hidden />
+            {exp.videoUrl && (
+              <button onClick={() => setMuted((m) => !m)} aria-label={muted ? 'Unmute' : 'Mute'} className="glass flex size-10 items-center justify-center rounded-full text-cream">
+                {muted ? <VolumeX className="size-[18px]" strokeWidth={1.8} aria-hidden /> : <Volume2 className="size-[18px]" strokeWidth={1.8} aria-hidden />}
               </button>
-              {exp.videoUrl && (
-                <button
-                  onClick={() => setMuted((m) => !m)}
-                  aria-label={muted ? 'Unmute' : 'Mute'}
-                  className="glass flex size-10 items-center justify-center rounded-full text-cream"
-                >
-                  {muted ? (
-                    <VolumeX className="size-[18px]" strokeWidth={1.8} aria-hidden />
-                  ) : (
-                    <Volume2 className="size-[18px]" strokeWidth={1.8} aria-hidden />
-                  )}
-                </button>
-              )}
-            </div>
+            )}
           </div>
         </div>
 
-        {/* Body */}
-        <div className="px-5 pt-5">
+        {/* Detail sheet */}
+        <div className="relative min-h-[42vh] rounded-t-[32px] bg-void px-5 pt-7 shadow-[0_-18px_45px_rgba(0,0,0,0.28)] motion-safe:animate-in motion-safe:slide-in-from-bottom-10 motion-safe:duration-500">
+          <div className="mx-auto mb-5 h-1.5 w-12 rounded-full bg-cream/25" />
+          {/* Body */}
+          <div className="pt-0">
           <h1 className="text-display text-balance">{exp.title}</h1>
           <div className="text-meta mt-2 flex flex-wrap items-center gap-2 text-cream-70">
             <span>{exp.neighborhood}</span>
@@ -210,6 +206,7 @@ export default function ExperienceDetail() {
                 {t}
               </button>
             ))}
+          </div>
           </div>
         </div>
       </div>
