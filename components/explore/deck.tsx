@@ -25,7 +25,7 @@ import type { Category, City } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
 export function Deck() {
-  const { hydrated, prefs, saved, passed, save, pass, undoLast } = useTrip()
+  const { hydrated, prefs, saved, passed, save, pass, undoLast, setPrefs } = useTrip()
   const { toast } = useToast()
   const router = useRouter()
   const reduce = useReducedMotion()
@@ -190,10 +190,11 @@ export function Deck() {
             <DeckSkeleton />
           ) : stack.length === 0 ? (
             <EmptyDeck
-              onLoosen={() => {
-                setActiveCats([])
-                setActiveCity('All')
-              }}
+          onLoosen={() => {
+            setActiveCats([])
+            setActiveCity('All')
+            setPrefs({ cities: [], interests: [], freeform: '' })
+          }}
               onReview={() => router.push('/saved')}
             />
           ) : (
