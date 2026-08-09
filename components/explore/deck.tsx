@@ -398,7 +398,7 @@ export function Deck() {
                   'text-meta flex items-center gap-1.5 rounded-full border px-3.5 py-2 transition',
                   on
                     ? 'border-accent-lift bg-accent-veil text-accent-lift'
-                    : 'border-glass-line text-cream/80',
+                    : 'border-line bg-surface text-ink-70',
                 )}
               >
                 <CategoryGlyph category={cat} className="size-3.5" />
