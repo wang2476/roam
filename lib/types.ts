@@ -11,6 +11,21 @@ export type Category =
   | 'Festivals'
   | 'Wellness'
   | 'Traditional'
+  | 'Photography'
+  | 'Architecture'
+  | 'History'
+  | 'Beaches'
+  | 'Hiking'
+  | 'Coffee'
+  | 'Design'
+  | 'Fashion'
+  | 'Wellness Retreats'
+  | 'Local Markets'
+  | 'Language Exchange'
+  | 'Film'
+  | 'Sports'
+  | 'Wildlife'
+  | 'Sustainability'
 
 export type Experience = {
   id: string
@@ -45,4 +60,6 @@ export type Preferences = {
   cities: City[]
   interests: Category[]
   freeform: string
+  destinationContinents?: string[]
+  destinationCountries?: string[]
 }

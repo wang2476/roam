@@ -13,7 +13,7 @@ export const TRIP_DAYS = [
   '2026-03-21',
 ]
 
-export const ALL_INTERESTS: Category[] = [
+export const CORE_INTERESTS: Category[] = [
   'Food',
   'Nightlife',
   'Art',
@@ -25,6 +25,26 @@ export const ALL_INTERESTS: Category[] = [
   'Wellness',
   'Traditional',
 ]
+
+export const SEARCH_INTERESTS: Category[] = [
+  'Photography',
+  'Architecture',
+  'History',
+  'Beaches',
+  'Hiking',
+  'Coffee',
+  'Design',
+  'Fashion',
+  'Wellness Retreats',
+  'Local Markets',
+  'Language Exchange',
+  'Film',
+  'Sports',
+  'Wildlife',
+  'Sustainability',
+]
+
+export const ALL_INTERESTS: Category[] = CORE_INTERESTS
 
 export const ALL_CITIES: City[] = ['Tokyo', 'Kyoto', 'Osaka']
 

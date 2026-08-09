@@ -3,13 +3,30 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Check, ChevronLeft, Mic } from 'lucide-react'
+import { Check, ChevronDown, ChevronLeft, Mic, Search } from 'lucide-react'
 import { Screen } from '@/components/screen'
-import { MediaFrame } from '@/components/media-frame'
 import { CategoryGlyph } from '@/components/category'
-import { ALL_CITIES, ALL_INTERESTS, CITY_IMAGE } from '@/lib/data'
+import { ALL_CITIES, CORE_INTERESTS, SEARCH_INTERESTS } from '@/lib/data'
 import { useTrip } from '@/lib/trip-context'
-import type { Category, City } from '@/lib/types'
+import type { Category } from '@/lib/types'
+
+const CONTINENTS = ['Africa', 'Asia', 'Europe', 'North America', 'South America', 'Oceania'] as const
+const COUNTRIES: Record<(typeof CONTINENTS)[number], string[]> = {
+  Africa: ['Egypt', 'Kenya', 'Morocco', 'Nigeria', 'South Africa', 'Tanzania'],
+  Asia: ['China', 'India', 'Indonesia', 'Japan', 'South Korea', 'Thailand', 'Vietnam'],
+  Europe: ['France', 'Germany', 'Greece', 'Italy', 'Portugal', 'Spain', 'United Kingdom'],
+  'North America': ['Canada', 'Costa Rica', 'Cuba', 'Mexico', 'United States'],
+  'South America': ['Argentina', 'Brazil', 'Chile', 'Colombia', 'Peru'],
+  Oceania: ['Australia', 'Fiji', 'New Zealand', 'Samoa'],
+}
+const CONTINENT_IMAGES: Record<(typeof CONTINENTS)[number], string> = {
+  Africa: '/onboarding/africa.png',
+  Asia: '/onboarding/asia.png',
+  Europe: '/onboarding/europe.png',
+  'North America': '/onboarding/north-america.png',
+  'South America': '/onboarding/south-america.png',
+  Oceania: '/onboarding/oceania.png',
+}
 import { cn } from '@/lib/utils'
 
 const GEN_STEPS = [
@@ -23,25 +40,29 @@ export default function OnboardingPage() {
   const { completeOnboarding } = useTrip()
 
   const [step, setStep] = useState(0)
-  const [cities, setCities] = useState<City[]>([])
+  const [continents, setContinents] = useState<string[]>([])
+  const [countries, setCountries] = useState<string[]>([])
   const [interests, setInterests] = useState<Category[]>([])
+  const [searchOpen, setSearchOpen] = useState(false)
   const [freeform, setFreeform] = useState('')
   const [generating, setGenerating] = useState(false)
 
   const minMet =
-    (step === 0 && cities.length >= 1) ||
+    (step === 0 && continents.length >= 1) ||
     (step === 1 && interests.length >= 3) ||
     step === 2
 
   const finish = useCallback(() => {
     completeOnboarding({
-      cities: cities.length ? cities : [...ALL_CITIES],
+      cities: [...ALL_CITIES],
       interests,
       freeform,
+      destinationContinents: continents,
+      destinationCountries: countries,
     })
     setGenerating(true)
     setTimeout(() => router.push('/explore'), 1900)
-  }, [cities, interests, freeform, completeOnboarding, router])
+  }, [continents, countries, interests, freeform, completeOnboarding, router])
 
   const next = () => {
     if (step < 2) setStep((s) => s + 1)
@@ -89,10 +110,20 @@ export default function OnboardingPage() {
             className="flex flex-1 flex-col pt-8"
           >
             {step === 0 && (
-              <StepDestinations cities={cities} setCities={setCities} />
+              <StepDestinations
+                continents={continents}
+                setContinents={setContinents}
+                countries={countries}
+                setCountries={setCountries}
+              />
             )}
             {step === 1 && (
-              <StepInterests interests={interests} setInterests={setInterests} />
+              <StepInterests
+                interests={interests}
+                setInterests={setInterests}
+                searchOpen={searchOpen}
+                setSearchOpen={setSearchOpen}
+              />
             )}
             {step === 2 && (
               <StepFreeform
@@ -125,48 +156,61 @@ export default function OnboardingPage() {
 }
 
 function StepDestinations({
-  cities,
-  setCities,
+  continents,
+  setContinents,
+  countries,
+  setCountries,
 }: {
-  cities: City[]
-  setCities: (c: City[]) => void
+  continents: string[]
+  setContinents: (c: string[]) => void
+  countries: string[]
+  setCountries: (c: string[]) => void
 }) {
-  const toggle = (c: City) =>
-    setCities(cities.includes(c) ? cities.filter((x) => x !== c) : [...cities, c])
+  const toggleContinent = (continent: string) => {
+    const next = continents.includes(continent)
+      ? continents.filter((item) => item !== continent)
+      : [...continents, continent]
+    setContinents(next)
+    if (continents.includes(continent)) {
+      setCountries(countries.filter((country) => !COUNTRIES[continent as keyof typeof COUNTRIES].includes(country)))
+    }
+  }
+  const toggleCountry = (country: string) =>
+    setCountries(countries.includes(country) ? countries.filter((item) => item !== country) : [...countries, country])
+
   return (
     <div className="flex flex-1 flex-col">
       <h1 className="text-display text-balance">Where are you headed?</h1>
-      <p className="text-body text-ink-60 mt-2">Pick one or more. You can change this later.</p>
-      <div className="mt-6 flex flex-1 flex-col gap-3">
-        {ALL_CITIES.map((c) => {
-          const on = cities.includes(c)
+      <p className="text-body text-ink-60 mt-2">Choose a continent, then refine it with countries.</p>
+      <div className="mt-5 grid grid-cols-2 gap-2.5">
+        {CONTINENTS.map((continent) => {
+          const on = continents.includes(continent)
           return (
             <button
-              key={c}
-              onClick={() => toggle(c)}
-              className={cn(
-                'relative flex-1 overflow-hidden rounded-[24px] border-2 transition',
-                on ? 'border-accent-red' : 'border-transparent',
-              )}
+              key={continent}
+              onClick={() => toggleContinent(continent)}
+              className={cn('relative flex h-28 items-end overflow-hidden rounded-2xl border bg-surface p-3 text-left transition', on ? 'border-accent-red ring-2 ring-accent-red/15' : 'border-line')}
             >
-              <MediaFrame
-                posterUrl={CITY_IMAGE[c]}
-                videoUrl={null}
-                active={false}
-                alt={c}
-                className={cn('h-full w-full transition', on ? 'saturate-50' : '')}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-void/70 to-transparent" />
-              <span className="text-title absolute bottom-4 left-4 text-cream">{c}</span>
-              {on && (
-                <span className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-accent-red text-cream">
-                  <Check className="size-5" strokeWidth={2.6} aria-hidden />
-                </span>
-              )}
+              <img src={CONTINENT_IMAGES[continent]} alt="" className="absolute inset-0 h-full w-full object-contain p-2 opacity-25" />
+              <span className="relative z-10 text-label font-medium text-ink">{continent}</span>
+              {on && <span className="absolute right-2 top-2 flex size-6 items-center justify-center rounded-full bg-accent-red text-cream"><Check className="size-4" strokeWidth={2.6} aria-hidden /></span>}
             </button>
           )
         })}
       </div>
+      {continents.length > 0 && (
+        <div className="mt-3 rounded-2xl border border-line bg-surface p-3">
+          <p className="text-label mb-2 text-ink-60">Countries</p>
+          <div className="no-scrollbar max-h-28 overflow-y-auto space-y-1">
+            {continents.flatMap((continent) => COUNTRIES[continent as keyof typeof COUNTRIES]).map((country) => (
+              <button key={country} onClick={() => toggleCountry(country)} className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-ink hover:bg-base">
+                {country}
+                {countries.includes(country) && <Check className="size-4 text-accent-red" aria-hidden />}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -174,41 +218,41 @@ function StepDestinations({
 function StepInterests({
   interests,
   setInterests,
+  searchOpen,
+  setSearchOpen,
 }: {
   interests: Category[]
   setInterests: (c: Category[]) => void
+  searchOpen: boolean
+  setSearchOpen: (open: boolean) => void
 }) {
-  const toggle = (c: Category) =>
-    setInterests(
-      interests.includes(c) ? interests.filter((x) => x !== c) : [...interests, c],
+  const [query, setQuery] = useState('')
+  const toggle = (c: Category) => setInterests(interests.includes(c) ? interests.filter((x) => x !== c) : [...interests, c])
+  const searchResults = SEARCH_INTERESTS.filter((interest) => interest.toLowerCase().includes(query.toLowerCase()))
+  const pill = (c: Category) => {
+    const on = interests.includes(c)
+    return (
+      <motion.button key={c} onClick={() => toggle(c)} whileTap={{ scale: 1.04 }} className={cn('text-meta flex items-center gap-1.5 rounded-full border px-3 py-2 transition', on ? 'border-ink bg-ink text-cream' : 'border-line bg-surface text-ink')}>
+        <CategoryGlyph category={c} className="size-4" />
+        {c}
+      </motion.button>
     )
+  }
   return (
     <div className="flex flex-1 flex-col">
       <h1 className="text-display text-balance">What are you into?</h1>
-      <p className="text-body text-ink-60 mt-2">
-        {interests.length} of {ALL_INTERESTS.length} selected &middot; pick at least 3
-      </p>
-      <div className="mt-6 flex flex-wrap gap-2.5">
-        {ALL_INTERESTS.map((c) => {
-          const on = interests.includes(c)
-          return (
-            <motion.button
-              key={c}
-              onClick={() => toggle(c)}
-              whileTap={{ scale: 1.04 }}
-              className={cn(
-                'text-body flex items-center gap-2 rounded-full border px-4 py-2.5 transition',
-                on
-                  ? 'border-ink bg-ink text-cream'
-                  : 'border-line bg-surface text-ink',
-              )}
-            >
-              <CategoryGlyph category={c} className="size-4" />
-              {c}
-            </motion.button>
-          )
-        })}
-      </div>
+      <p className="text-body text-ink-60 mt-2">{interests.length} selected &middot; pick at least 3</p>
+      <div className="mt-5 flex flex-wrap gap-2">{CORE_INTERESTS.map(pill)}</div>
+      <button onClick={() => setSearchOpen(!searchOpen)} className="text-body mt-4 flex items-center justify-between rounded-2xl border border-line bg-surface px-4 py-3 text-left text-ink">
+        <span className="flex items-center gap-2"><Search className="size-4 text-ink-60" aria-hidden /> Search more interests</span>
+        <ChevronDown className={cn('size-4 transition-transform', searchOpen && 'rotate-180')} aria-hidden />
+      </button>
+      {searchOpen && (
+        <div className="mt-2 rounded-2xl border border-line bg-surface p-3">
+          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search interests" className="text-body mb-3 w-full rounded-xl border border-line bg-base px-3 py-2 outline-none focus:border-accent-red" autoFocus />
+          <div className="no-scrollbar flex max-h-32 flex-wrap gap-2 overflow-y-auto">{searchResults.map(pill)}</div>
+        </div>
+      )}
     </div>
   )
 }
