@@ -269,7 +269,7 @@ function TimelineEntry({
           <div className="size-16 shrink-0 overflow-hidden rounded-2xl">
             <MediaFrame
               posterUrl={row.exp.posterUrl}
-              videoUrl={null}
+              videoUrl={row.exp.videoUrl}
               active={false}
               alt={row.exp.title}
               className="h-full w-full"

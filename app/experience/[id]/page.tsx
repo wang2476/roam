@@ -21,7 +21,7 @@ import { AvatarMono } from '@/components/avatar-mono'
 import { CategoryGlyph } from '@/components/category'
 import { ScheduleSheet } from '@/components/schedule-sheet'
 import { useToast } from '@/components/toast'
-import { CITY_IMAGE, getExperience } from '@/lib/data'
+import { getExperience } from '@/lib/data'
 import { formatDayLong, formatTime } from '@/lib/helpers'
 import { useTrip } from '@/lib/trip-context'
 import type { City } from '@/lib/types'
@@ -59,8 +59,6 @@ export default function ExperienceDetail() {
   }
 
   const isSaved = saved.includes(exp.id)
-  const strip = [exp.posterUrl, CITY_IMAGE[exp.city], exp.posterUrl]
-
   const doShare = () => {
     const url = window.location.href
     if (navigator.share) navigator.share({ title: exp.title, url }).catch(() => {})
@@ -116,24 +114,6 @@ export default function ExperienceDetail() {
           </div>
         </div>
 
-        {/* Photo strip */}
-        <div className="no-scrollbar -mt-6 flex gap-2 overflow-x-auto px-4 pb-1">
-          {strip.map((src, i) => (
-            <div
-              key={i}
-              className="h-20 w-28 shrink-0 overflow-hidden rounded-2xl border border-glass-line"
-            >
-              <MediaFrame
-                posterUrl={src}
-                videoUrl={null}
-                active={false}
-                alt=""
-                className="h-full w-full"
-              />
-            </div>
-          ))}
-        </div>
-
         {/* Body */}
         <div className="px-5 pt-5">
           <h1 className="text-display text-balance">{exp.title}</h1>
@@ -174,16 +154,14 @@ export default function ExperienceDetail() {
           <div className="mt-6">
             <h2 className="text-label text-cream-55 mb-3">Location</h2>
             <div className="overflow-hidden rounded-[20px] border border-glass-line">
-              <div className="relative h-32 bg-[#1a1714]">
-                <div
-                  className="absolute inset-0 opacity-40"
-                  style={{
-                    backgroundImage:
-                      'linear-gradient(rgba(245,241,234,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(245,241,234,0.08) 1px, transparent 1px)',
-                    backgroundSize: '28px 28px',
-                  }}
+              <div className="relative h-40 overflow-hidden bg-[#e8e4dc]">
+                <iframe
+                  title={`Map showing ${exp.neighborhood}`}
+                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${exp.lng - 0.025}%2C${exp.lat - 0.018}%2C${exp.lng + 0.025}%2C${exp.lat + 0.018}&layer=mapnik&marker=${exp.lat}%2C${exp.lng}`}
+                  className="h-full w-full border-0"
+                  loading="lazy"
                 />
-                <span className="absolute left-1/2 top-1/2 flex size-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-accent-red text-cream shadow-lg">
+                <span className="pointer-events-none absolute left-1/2 top-1/2 flex size-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-accent-red text-cream shadow-lg">
                   <MapPin className="size-5" strokeWidth={2} aria-hidden />
                 </span>
               </div>
