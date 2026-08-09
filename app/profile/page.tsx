@@ -256,6 +256,21 @@ export default function ProfilePage() {
               Clears saves, plans, and preferences on this device.
             </p>
           </section>
+
+          {/* Dev settings */}
+          <section className="border-t border-line pt-6">
+            <p className="text-label text-ink-30">Dev settings</p>
+            <button
+              onClick={() => {
+                resetDemoData()
+                setSynced(false)
+                router.push('/onboarding')
+              }}
+              className="text-body mt-3 w-full rounded-full border border-line bg-surface py-3.5 font-medium text-ink transition active:scale-[0.98]"
+            >
+              Restart onboarding
+            </button>
+          </section>
         </div>
       </div>
 
