@@ -352,7 +352,7 @@ export function Deck() {
                 }}
                 className={cn(
                   'text-body flex items-center justify-between rounded-2xl px-4 py-3.5 text-left transition',
-                  selected ? 'bg-accent-veil text-accent-lift' : 'bg-glass text-cream',
+                  selected ? 'bg-accent-tint text-accent-red' : 'bg-surface text-ink-70',
                 )}
               >
                 {c === 'All' ? 'All cities' : c}
@@ -377,7 +377,7 @@ export function Deck() {
           {activeCats.length > 0 && (
             <button
               onClick={() => setActiveCats([])}
-              className="text-label text-accent-lift"
+              className="text-label text-accent-red"
             >
               Clear
             </button>
@@ -409,7 +409,7 @@ export function Deck() {
         </div>
         <button
           onClick={() => setFilterOpen(false)}
-          className="text-body mt-4 w-full rounded-full bg-cream py-3.5 font-medium text-void transition active:scale-[0.98]"
+          className="text-body mt-4 w-full rounded-full bg-ink py-3.5 font-medium text-cream transition active:scale-[0.98]"
         >
           Show results
         </button>
