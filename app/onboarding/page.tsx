@@ -3,9 +3,8 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Check, ChevronDown, ChevronLeft, Mic, Search } from 'lucide-react'
+import { Check, ChevronLeft, Mic } from 'lucide-react'
 import { Screen } from '@/components/screen'
-import { CategoryGlyph } from '@/components/category'
 import { ALL_CITIES, CORE_INTERESTS, SEARCH_INTERESTS, EXPERIENCES } from '@/lib/data'
 import { useTrip } from '@/lib/trip-context'
 import type { Category } from '@/lib/types'
@@ -44,7 +43,6 @@ export default function OnboardingPage() {
   const [continents, setContinents] = useState<string[]>([])
   const [countries, setCountries] = useState<string[]>([])
   const [interests, setInterests] = useState<Category[]>([])
-  const [searchOpen, setSearchOpen] = useState(false)
   const [freeform, setFreeform] = useState('')
   const [generating, setGenerating] = useState(false)
 
@@ -127,8 +125,6 @@ export default function OnboardingPage() {
               <StepInterests
                 interests={interests}
                 setInterests={setInterests}
-                searchOpen={searchOpen}
-                setSearchOpen={setSearchOpen}
               />
             )}
             {step === 2 && (
@@ -247,7 +243,7 @@ function StepDestinations({
             <button
               key={continent}
               onClick={() => toggleContinent(continent)}
-              className={cn('relative flex h-28 items-end overflow-hidden rounded-2xl border bg-surface p-3 text-left transition', on ? 'border-accent-red ring-2 ring-accent-red/15' : 'border-line')}
+              className={cn('relative flex h-28 items-end overflow-hidden rounded-2xl border bg-white p-3 text-left transition', on ? 'border-accent-red ring-2 ring-accent-red/15' : 'border-line')}
             >
               <img src={CONTINENT_IMAGES[continent]} alt="" className="absolute inset-0 h-full w-full object-contain p-2 opacity-25" />
               <span className="relative z-10 text-label font-medium text-ink">{continent}</span>
@@ -276,22 +272,20 @@ function StepDestinations({
 function StepInterests({
   interests,
   setInterests,
-  searchOpen,
-  setSearchOpen,
 }: {
   interests: Category[]
   setInterests: (c: Category[]) => void
-  searchOpen: boolean
-  setSearchOpen: (open: boolean) => void
 }) {
-  const [query, setQuery] = useState('')
   const toggle = (c: Category) => setInterests(interests.includes(c) ? interests.filter((x) => x !== c) : [...interests, c])
-  const searchResults = SEARCH_INTERESTS.filter((interest) => interest.toLowerCase().includes(query.toLowerCase()))
+  const interestEmoji: Record<Category, string> = {
+    Food: '🍜', Nightlife: '🌙', Art: '🎨', Anime: '🎮', Music: '🎵', Nature: '🌿', Shopping: '🛍️', Festivals: '🎉', Wellness: '🧘', Traditional: '🏮',
+    Photography: '📷', Architecture: '🏛️', History: '📜', Beaches: '🏖️', Hiking: '🥾', Coffee: '☕', Design: '✦', Fashion: '👗', 'Wellness Retreats': '🌸', 'Local Markets': '🧺', 'Language Exchange': '💬', Film: '🎬', Sports: '⚽', Wildlife: '🦋', Sustainability: '🌎',
+  }
   const pill = (c: Category) => {
     const on = interests.includes(c)
     return (
       <motion.button key={c} onClick={() => toggle(c)} whileTap={{ scale: 1.04 }} className={cn('text-meta flex items-center gap-1.5 rounded-full border px-3 py-2 transition', on ? 'border-ink bg-ink text-cream' : 'border-line bg-surface text-ink')}>
-        <CategoryGlyph category={c} className="size-4" />
+        <span aria-hidden>{interestEmoji[c]}</span>
         {c}
       </motion.button>
     )
@@ -300,17 +294,7 @@ function StepInterests({
     <div className="flex flex-1 flex-col">
       <h1 className="text-display text-balance">What are you into?</h1>
       <p className="text-body text-ink-60 mt-2">{interests.length} selected &middot; pick at least 3</p>
-      <div className="mt-5 flex flex-wrap gap-2">{CORE_INTERESTS.map(pill)}</div>
-      <button onClick={() => setSearchOpen(!searchOpen)} className="text-body mt-4 flex items-center justify-between rounded-2xl border border-line bg-surface px-4 py-3 text-left text-ink">
-        <span className="flex items-center gap-2"><Search className="size-4 text-ink-60" aria-hidden /> Search more interests</span>
-        <ChevronDown className={cn('size-4 transition-transform', searchOpen && 'rotate-180')} aria-hidden />
-      </button>
-      {searchOpen && (
-        <div className="mt-2 rounded-2xl border border-line bg-surface p-3">
-          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search interests" className="text-body mb-3 w-full rounded-xl border border-line bg-base px-3 py-2 outline-none focus:border-accent-red" autoFocus />
-          <div className="no-scrollbar flex max-h-32 flex-wrap gap-2 overflow-y-auto">{searchResults.map(pill)}</div>
-        </div>
-      )}
+      <div className="no-scrollbar mt-5 flex max-h-[52vh] flex-wrap content-start gap-2 overflow-y-auto pb-2">{[...CORE_INTERESTS, ...SEARCH_INTERESTS].map(pill)}</div>
     </div>
   )
 }
