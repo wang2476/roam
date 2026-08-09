@@ -58,7 +58,7 @@ export function ItineraryPreferences({ open, onClose, onBuild }: { open: boolean
   return (
     <AnimatePresence>
       {open && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-[80] flex flex-col bg-base">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[80] mx-auto flex w-full max-w-[440px] flex-col bg-base">
           <header className="flex items-center justify-between px-5 pb-3 pt-[max(18px,env(safe-area-inset-top))]">
             <button onClick={back} aria-label="Go back" className="flex size-10 items-center justify-center rounded-full bg-surface"><ChevronLeft className="size-5" /></button>
             <div className="flex gap-1.5" aria-label={`Step ${step + 1} of 4`}>{[0, 1, 2, 3].map((item) => <span key={item} className={cn('h-1 w-8 rounded-full', item <= step ? 'bg-accent-red' : 'bg-line')} />)}</div>
@@ -72,8 +72,8 @@ export function ItineraryPreferences({ open, onClose, onBuild }: { open: boolean
             {step === 3 && <NotesStep notes={notes} setNotes={setNotes} />}
           </main>
 
-          <footer className="absolute inset-x-0 bottom-0 border-t border-line bg-base/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
-            <button onClick={next} className="w-full rounded-full bg-ink py-3.5 text-title text-cream">{step === 3 ? 'Build my itinerary' : 'Continue'}</button>
+          <footer className="inset-x-0 bottom-0 shrink-0 border-t border-line bg-base/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+            <button onClick={next} className="text-body w-full rounded-full bg-ink py-3.5 font-medium text-cream transition active:scale-[0.98]">{step === 3 ? 'Build my itinerary' : 'Continue'}</button>
           </footer>
         </motion.div>
       )}
