@@ -18,7 +18,7 @@ const serif = DM_Serif_Display({
 })
 
 export const metadata: Metadata = {
-  title: 'Ikou — Swipe now, plan later',
+  title: 'Roam — Swipe now, plan later',
   description:
     'Discover local experiences across Tokyo, Kyoto, and Osaka. Swipe to save, then build a day-by-day itinerary.',
   generator: 'v0.app',

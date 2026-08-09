@@ -36,7 +36,7 @@ export default function SplashPage() {
               className="text-cream"
               style={{ fontSize: 56, lineHeight: '58px', fontWeight: 300, letterSpacing: '-0.03em' }}
             >
-              Ikou
+              Roam
             </h1>
             <p className="text-body mt-2 text-cream-70">Swipe now, plan later.</p>
           </div>

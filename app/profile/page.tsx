@@ -288,7 +288,7 @@ export default function ProfilePage() {
           </h3>
           <p className="text-body text-ink-60 mt-2 text-balance">
             This removes everything you&apos;ve saved and planned, and returns
-            Ikou to its starting state.
+            Roam to its starting state.
           </p>
           <div className="mt-6 flex w-full flex-col gap-2.5">
             <button
