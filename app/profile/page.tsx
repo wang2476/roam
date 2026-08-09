@@ -297,7 +297,7 @@ export default function ProfilePage() {
                 setSynced(false)
                 setConfirmReset(false)
                 toast('Demo data reset')
-                router.push('/')
+                router.push('/onboarding?restart=1')
               }}
               className="text-body w-full rounded-full bg-accent-red py-3.5 font-medium text-cream transition active:scale-[0.98]"
             >

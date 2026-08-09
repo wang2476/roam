@@ -38,9 +38,8 @@ export default function OnboardingPage() {
   const router = useRouter()
   const { completeOnboarding } = useTrip()
 
-  const [showLaunch, setShowLaunch] = useState(() =>
-    typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('restart') === '1',
-  )
+  const [mounted, setMounted] = useState(false)
+  const [showLaunch, setShowLaunch] = useState(false)
   const [step, setStep] = useState(0)
   const [continents, setContinents] = useState<string[]>([])
   const [countries, setCountries] = useState<string[]>([])
@@ -50,6 +49,7 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     setShowLaunch(new URLSearchParams(window.location.search).get('restart') === '1')
+    setMounted(true)
   }, [])
 
   const minMet =
@@ -74,6 +74,7 @@ export default function OnboardingPage() {
     else finish()
   }
 
+  if (!mounted) return null
   if (generating) return <GeneratingScreen />
   if (showLaunch) return <LaunchScreen onStart={() => setShowLaunch(false)} />
 
@@ -247,8 +248,9 @@ function StepDestinations({
               onClick={() => toggleContinent(continent)}
               className={cn('relative flex h-28 items-end overflow-hidden rounded-2xl border bg-white p-3 text-left transition', on ? 'border-accent-red ring-2 ring-accent-red/15' : 'border-line')}
             >
-              <div aria-hidden="true" className="absolute inset-2 rounded-xl bg-white" />
-              <img src={CONTINENT_IMAGES[continent]} alt="" className="absolute inset-2 h-[calc(100%-1rem)] w-[calc(100%-1rem)] rounded-xl bg-white object-contain p-2 opacity-25" />
+              <div aria-hidden="true" className="absolute inset-2 z-0 overflow-hidden rounded-xl bg-white">
+                <img src={CONTINENT_IMAGES[continent]} alt="" className="h-full w-full object-cover opacity-40 mix-blend-multiply" />
+              </div>
               <span className="relative z-10 text-label font-medium text-ink">{continent}</span>
               {on && <span className="absolute right-2 top-2 flex size-6 items-center justify-center rounded-full bg-accent-red text-cream"><Check className="size-4" strokeWidth={2.6} aria-hidden /></span>}
             </button>
@@ -281,7 +283,7 @@ function StepInterests({
 }) {
   const toggle = (c: Category) => setInterests(interests.includes(c) ? interests.filter((x) => x !== c) : [...interests, c])
   const interestEmoji: Record<Category, string> = {
-    Food: '🍜', Nightlife: '🌙', Art: '🎨', Anime: '🎮', Music: '🎵', Nature: '🌿', Shopping: '🛍️', Festivals: '🎉', Wellness: '🧘', Traditional: '🏮',
+    Food: '🍜', Nightlife: '🌙', Art: '🎨', Anime: '���', Music: '🎵', Nature: '🌿', Shopping: '🛍️', Festivals: '🎉', Wellness: '🧘', Traditional: '🏮',
     Photography: '📷', Architecture: '🏛️', History: '📜', Beaches: '🏖️', Hiking: '🥾', Coffee: '☕', Design: '✦', Fashion: '👗', 'Wellness Retreats': '🌸', 'Local Markets': '🧺', 'Language Exchange': '💬', Film: '🎬', Sports: '⚽', Wildlife: '🦋', Sustainability: '🌎',
   }
   const pill = (c: Category) => {

@@ -106,3 +106,13 @@ export function rankExperiences(exps: Experience[], prefs: Preferences) {
     .sort((a, b) => b.s - a.s || a.e.date.localeCompare(b.e.date))
     .map((x) => x.e)
 }
+
+// Fisher-Yates shuffle: returns a new array in random order without mutating the input.
+export function shuffle<T>(items: T[]) {
+  const result = [...items]
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[result[i], result[j]] = [result[j], result[i]]
+  }
+  return result
+}
