@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Check, Loader2 } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { useToast } from '@/components/toast'
 import { useTrip } from '@/lib/trip-context'
 
@@ -57,13 +57,7 @@ export function BuildOverlay({
           exit={{ opacity: 0 }}
           className="absolute inset-0 z-[85] flex flex-col items-center justify-center gap-8 bg-void/92 px-10 text-center backdrop-blur-md"
         >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2.4, repeat: Infinity, ease: 'linear' }}
-            className="flex size-16 items-center justify-center rounded-full border border-glass-line"
-          >
-            <Loader2 className="size-7 text-accent-lift" strokeWidth={1.8} aria-hidden />
-          </motion.div>
+          <BuildingStack />
 
           <div className="flex flex-col gap-3">
             {STEPS.map((label, i) => (
@@ -92,5 +86,33 @@ export function BuildOverlay({
         </motion.div>
       )}
     </AnimatePresence>
+  )
+}
+
+// Mirrors the explore feed's card-stack skeleton so building an itinerary reads
+// as a continuation of the same loading language, instead of a generic spinner.
+function BuildingStack() {
+  return (
+    <div className="relative h-36 w-28">
+      {[16, 8, 0].map((y, i) => (
+        <motion.div
+          key={y}
+          initial={false}
+          animate={{ y: [y, y - 4, y], scale: [1 - i * 0.06, 1 - i * 0.06 + 0.01, 1 - i * 0.06] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: i * 0.15 }}
+          className="absolute inset-0 overflow-hidden rounded-[20px] border border-glass-line bg-[#1a1714]"
+          style={{ opacity: i === 2 ? 1 : 0.55 }}
+        >
+          {i === 2 && (
+            <div className="absolute inset-0 animate-pulse">
+              <div className="absolute bottom-3 left-3 right-4 space-y-2">
+                <div className="h-3 w-3/4 rounded bg-cream/15" />
+                <div className="h-2 w-1/2 rounded bg-cream/15" />
+              </div>
+            </div>
+          )}
+        </motion.div>
+      ))}
+    </div>
   )
 }
