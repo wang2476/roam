@@ -273,7 +273,7 @@ function TimelineEntry({
               <span className="text-label mt-1 inline-block text-warn">Overlaps</span>
             )}
             <MatchChip
-              reason={row.exp.matchReason}
+              reason={row.exp.matchReason.replace(/^because you (like|chose|mentioned|would rather)\s*/i, '')}
               variant="light"
               className="mt-1.5 w-fit"
             />
