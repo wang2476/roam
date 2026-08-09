@@ -162,7 +162,7 @@ export default function OnboardingPage() {
 }
 
 function LaunchScreen({ onStart }: { onStart: () => void }) {
-  const media = EXPERIENCES.filter((experience) => experience.videoUrl).slice(0, 8)
+  const media = EXPERIENCES.filter((experience) => experience.videoUrl && experience.posterUrl).slice(0, 8)
 
   return (
     <main className="relative flex min-h-[100dvh] flex-col overflow-hidden bg-ink text-cream">
@@ -177,10 +177,13 @@ function LaunchScreen({ onStart }: { onStart: () => void }) {
                 height: `${112 + ((index * 23) % 82)}px`,
                 animationDuration: `${25 + ((index * 11) % 24)}s`,
                 animationDelay: `${-((index * 7) % 30)}s`,
+                backgroundImage: `url(${experience.posterUrl})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
               }}
             >
               <video
-                src={experience.videoUrl ?? undefined}
+                src={experience.videoUrl}
                 poster={experience.posterUrl}
                 muted
                 autoPlay
