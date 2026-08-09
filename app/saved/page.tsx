@@ -8,6 +8,7 @@ import { Screen } from '@/components/screen'
 import { MediaFrame } from '@/components/media-frame'
 import { ScheduleSheet } from '@/components/schedule-sheet'
 import { BuildOverlay } from '@/components/saved/build-overlay'
+import { ItineraryPreferences } from '@/components/saved/itinerary-preferences'
 import { getExperience } from '@/lib/data'
 import { useTrip } from '@/lib/trip-context'
 import type { City, Experience } from '@/lib/types'
@@ -17,11 +18,13 @@ type Sort = 'recent' | 'date'
 const CITY_TABS: (City | 'All')[] = ['All', 'Tokyo', 'Kyoto', 'Osaka']
 
 export default function SavedPage() {
+  const router = useRouter()
   const { hydrated, saved, unsave } = useTrip()
   const [cityTab, setCityTab] = useState<City | 'All'>('All')
   const [sort, setSort] = useState<Sort>('recent')
   const [scheduleId, setScheduleId] = useState<string | null>(null)
   const [building, setBuilding] = useState(false)
+  const [preferencesOpen, setPreferencesOpen] = useState(false)
 
   const items = useMemo(() => {
     const list = saved
@@ -80,7 +83,7 @@ export default function SavedPage() {
           <>
             {/* AI moment */}
             <button
-              onClick={() => setBuilding(true)}
+              onClick={() => setPreferencesOpen(true)}
               className="relative mt-5 overflow-hidden rounded-[28px] p-5 text-left"
               style={{
                 background:
@@ -109,6 +112,7 @@ export default function SavedPage() {
                 <SavedCard
                   key={exp.id}
                   exp={exp}
+                  onOpen={() => router.push(`/experience/${exp.id}`)}
                   onSchedule={() => setScheduleId(exp.id)}
                   onRemove={() => unsave(exp.id)}
                 />
@@ -124,6 +128,14 @@ export default function SavedPage() {
         onClose={() => setScheduleId(null)}
       />
 
+      <ItineraryPreferences
+        open={preferencesOpen}
+        onClose={() => setPreferencesOpen(false)}
+        onBuild={() => {
+          setPreferencesOpen(false)
+          setBuilding(true)
+        }}
+      />
       <BuildOverlay open={building} onClose={() => setBuilding(false)} />
     </Screen>
   )
@@ -131,10 +143,12 @@ export default function SavedPage() {
 
 function SavedCard({
   exp,
+  onOpen,
   onSchedule,
   onRemove,
 }: {
   exp: Experience
+  onOpen: () => void
   onSchedule: () => void
   onRemove: () => void
 }) {
@@ -155,6 +169,12 @@ function SavedCard({
       onPointerDown={startPress}
       onPointerUp={cancelPress}
       onPointerLeave={cancelPress}
+      onClick={onOpen}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') onOpen()
+      }}
     >
       <div className="relative aspect-[4/3] w-full shrink-0">
         <MediaFrame
@@ -165,7 +185,10 @@ function SavedCard({
           className="h-full w-full"
         />
         <button
-          onClick={onSchedule}
+          onClick={(event) => {
+            event.stopPropagation()
+            onSchedule()
+          }}
           aria-label={`Add ${exp.title} to itinerary`}
           className="absolute right-2.5 top-2.5 flex size-9 items-center justify-center rounded-full bg-cream/90 text-void backdrop-blur-sm transition active:scale-90"
         >
@@ -181,7 +204,8 @@ function SavedCard({
               className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-void/70 p-4 backdrop-blur-sm"
             >
               <button
-                onClick={() => {
+                onClick={(event) => {
+                  event.stopPropagation()
                   setRevealed(false)
                   onRemove()
                 }}
@@ -191,7 +215,10 @@ function SavedCard({
                 Remove
               </button>
               <button
-                onClick={() => setRevealed(false)}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  setRevealed(false)
+                }}
                 className="text-label text-cream/80"
               >
                 Cancel

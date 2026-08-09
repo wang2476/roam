@@ -2,7 +2,7 @@
 
 import { motion } from 'motion/react'
 import { useParams, useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import {
   BadgeCheck,
   Bookmark,
@@ -43,6 +43,11 @@ export default function ExperienceDetail() {
   const [muted, setMuted] = useState(true)
   const [expanded, setExpanded] = useState(false)
   const [scheduleOpen, setScheduleOpen] = useState(false)
+  const detailScrollRef = useRef<HTMLDivElement>(null)
+
+  const resetToVideo = () => {
+    detailScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   if (!exp) {
     return (
@@ -85,7 +90,7 @@ export default function ExperienceDetail() {
           className="h-full w-full"
         />
       </div>
-      <div className="relative z-10 min-h-[100dvh] pb-28 pt-[58vh] lg:h-[calc(100dvh-3rem)] lg:overflow-y-auto no-scrollbar">
+      <div ref={detailScrollRef} className="relative z-10 min-h-[100dvh] overflow-y-auto pb-28 pt-[58vh] no-scrollbar lg:h-[calc(100dvh-3rem)]">
         {/* Back and media controls */}
         <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-4 pt-[max(14px,env(safe-area-inset-top))]">
           <button
@@ -109,7 +114,12 @@ export default function ExperienceDetail() {
 
         {/* Detail sheet */}
         <div className="relative min-h-[42vh] rounded-t-[32px] bg-void px-5 pt-7 shadow-[0_-18px_45px_rgba(0,0,0,0.28)] motion-safe:animate-in motion-safe:slide-in-from-bottom-10 motion-safe:duration-500">
-          <div className="mx-auto mb-5 h-1.5 w-12 rounded-full bg-cream/25" />
+          <button
+            type="button"
+            onClick={resetToVideo}
+            aria-label="Show full video"
+            className="mx-auto mb-5 block h-1.5 w-12 rounded-full bg-cream/25 transition hover:bg-cream/45 active:scale-95"
+          />
           {/* Body */}
           <div className="pt-0">
           <h1 className="text-display text-balance">{exp.title}</h1>

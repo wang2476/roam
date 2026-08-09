@@ -8,8 +8,6 @@ import {
 } from 'motion/react'
 import { Bookmark, Share2 } from 'lucide-react'
 import { MediaFrame } from '@/components/media-frame'
-import { MatchChip } from '@/components/match-chip'
-import { formatDayShort, formatTime } from '@/lib/helpers'
 import type { Experience } from '@/lib/types'
 
 export type Dir = 'left' | 'right' | 'up' | null
@@ -117,19 +115,14 @@ export function SwipeCard({
         </motion.div>
 
         {/* content */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-col gap-3 p-6">
-          <MatchChip reason={exp.matchReason} className="w-fit" />
-          <h2 className="font-serif-display text-display line-clamp-2 text-cream text-balance">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-col gap-2.5 p-5">
+          <h2 className="font-serif-display text-3xl font-medium leading-tight line-clamp-2 text-cream text-balance">
             {exp.title}
           </h2>
-          <div className="text-meta flex items-center gap-2 text-cream-70">
+          <div className="text-meta flex items-center text-cream-70">
             <span>{exp.neighborhood}</span>
-            <span className="size-1 rounded-full bg-cream/40" />
-            <span>
-              {formatDayShort(exp.date)} · {formatTime(exp.startTime)}
-            </span>
           </div>
-          <p className="text-body line-clamp-2 text-cream/70">
+          <p className="text-sm leading-relaxed line-clamp-2 text-cream/70">
             {exp.description}
           </p>
           <div className="text-meta mt-1 flex items-center gap-5 text-cream-70">
