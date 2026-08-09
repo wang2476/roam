@@ -56,12 +56,17 @@ export function Deck() {
   // Reset the working deck only when filters (not swipes) change.
   useEffect(() => {
     if (!hydrated) return
-    const list = rankExperiences(
+    const ranked = rankExperiences(
       EXPERIENCES.filter(
         (e) => !seenRef.current.has(e.id) && matchesFilters(e.city, e.tags),
       ),
       prefs,
-    ).map((e) => e.id)
+    )
+    // Put newly imported clips first so the video catalog is immediately discoverable.
+    const list = [
+      ...ranked.filter((e) => e.videoUrl),
+      ...ranked.filter((e) => !e.videoUrl),
+    ].map((e) => e.id)
     setDeckIds(list)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated, activeCity, activeCats, prefs.cities.join(), prefs.interests.join(), prefs.freeform])
@@ -215,7 +220,7 @@ export function Deck() {
                       <div className="media-scrim relative h-full w-full overflow-hidden rounded-[28px]">
                         <MediaFrame
                           posterUrl={exp.posterUrl}
-                          videoUrl={null}
+                          videoUrl={exp.videoUrl}
                           active={false}
                           alt=""
                           className="h-full w-full"
